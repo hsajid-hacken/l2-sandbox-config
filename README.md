@@ -89,6 +89,16 @@ l1ChainID = 20253                       # Target L1 chain
 fundDevAccounts = true                  # Fund development accounts
 l1ContractsLocator = "tag://op-contracts/v4.0.0"  # L1 contract version
 l2ContractsLocator = "tag://op-contracts/v4.0.0"  # L2 contract version
+[[chains]]
+  id = "0x0000000000000000000000000000000000000000000000000000000000004f1e"
+  baseFeeVaultRecipient = "0xB67b4ac6Dcef5031AcA1D59E980e16753b4c97F8"
+  l1FeeVaultRecipient = "0xB67b4ac6Dcef5031AcA1D59E980e16753b4c97F8"
+  sequencerFeeVaultRecipient = "0xB67b4ac6Dcef5031AcA1D59E980e16753b4c97F8"
+  eip1559DenominatorCanyon = 250
+  eip1559Denominator = 50
+  eip1559Elasticity = 6
+  operatorFeeScalar = 0
+  operatorFeeConstant = 0
 ```
 
 **Key Roles Defined:**
@@ -398,11 +408,6 @@ curl -X POST http://localhost:9545 -H "Content-Type: application/json" \
 curl -X POST http://localhost:8547 -H "Content-Type: application/json" \
   --data '{"jsonrpc":"2.0","method":"optimism_syncStatus","id":1}'
 
-# op-batcher health
-curl http://localhost:8548/health
-
-# op-proposer health
-curl http://localhost:8560/health
 ```
 
 ### Debug Commands
