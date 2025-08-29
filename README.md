@@ -9,7 +9,7 @@ A comprehensive guide to understanding and deploying an Optimism Layer 2 network
 ## 📑 Table of Contents
 
 - [Architecture Overview](#architecture-overview)
-- [Network Configuration](#network-configuration)
+- [Network Configuration](#-network-configuration)
 - [Configuration Files Deep Dive](#configuration-files-deep-dive)
 - [Component Configurations](#component-configurations)
 - [Smart Contract Addresses](#smart-contract-addresses)
