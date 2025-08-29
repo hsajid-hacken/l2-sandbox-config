@@ -1,0 +1,87 @@
+The following configurations are used to build and deploy the layer 2 optimism based network over self hosted POS Ethereum Devnet.
+
+intent.toml: https://github.com/hsajid-hacken/l2-sandbox-config/blob/main/.deployer/intent.toml
+genesis.json: https://github.com/hsajid-hacken/l2-sandbox-config/blob/main/.deployer/genesis.json
+rollup.json: https://github.com/hsajid-hacken/l2-sandbox-config/blob/main/.deployer/rollup.json
+state.json: https://github.com/hsajid-hacken/l2-sandbox-config/blob/main/.deployer/state.json
+
+The following are explicit configurations passed via command flags of each node simulation like op-geth, op-node, op-proposer, op-batcher
+
+op-geth
+./geth   
+--datadir=./op-geth-data  \
+--http \
+--http.addr=0.0.0.0 \
+--http.port=9545 \
+--http.vhosts="*" \
+--http.corsdomain="*" \
+--http.api=eth,net,web3,debug,txpool,admin,personal \
+--ws \
+--ws.addr=0.0.0.0 \
+--ws.port=9546 \
+--ws.origins="*" \
+--ws.api=eth,net,web3,debug,txpool,admin \ 
+--authrpc.addr=0.0.0.0 \
+--authrpc.port=9551 \
+--authrpc.vhosts="*" \
+--authrpc.jwtsecret=./jwt.txt \
+--port=9303 \
+--networkid="20254" \
+--syncmode=full \
+--gcmode=archive \
+--nodiscover \
+--maxpeers=0 \
+--rollup.disabletxpoolgossip=true \
+--ipcpath "/home/ubuntu/layer1-layer2-scripts/layer2/sequencer-node/op-geth-data/geth.ipc" 
+
+Op-Node:
+./op-node \
+  --l1= http://3.108.65.88:8545 \
+  --l1.beacon= http://3.108.65.88:3500 \
+  --l2= http://3.110.183.232:9551 \
+  --l2.jwt-secret=$JWT_SECRET \
+  --rollup.config=./rollup.json \
+  --sequencer.enabled= true \
+  --sequencer.stopped=false \
+  --sequencer.max-safe-lag=3600 \
+  --verifier.l1-confs=4 \
+  --p2p.disable \
+  --rpc.addr=0.0.0.0 \
+  --rpc.port=8547 \
+  --rpc.enable-admin \
+  --log.level=info 
+
+OP-Proposer:
+./op-proposer   \
+--poll-interval=20s   \
+--rpc.port=8560   \
+--rpc.enable-admin   \
+--rollup-rpc=http://3.110.185.186:8547   \
+--l1-eth-rpc=http://3.108.65.88:8545   \
+--private-key=0x239a5b34386a7a59f7dee33b117fb955978471ff8bb1a3fc86417155584cd05f   \
+--game-factory-address=0x33cb848948e3b731f2106d9bc64e03ae1c8be445   \
+--game-type=1   \
+--proposal-interval=600s   \
+--num-confirmations=1   \
+--resubmission-timeout=30s   \
+--wait-node-sync=true   \
+--log.level=info
+
+OP-Batcher:
+./op-batcher   \
+--l2-eth-rpc=http://3.110.183.232:9545 \ --rollup-rpc=http://3.110.185.186:8547   \
+--poll-interval=1s   \
+--sub-safety-margin=6   \
+--num-confirmations=1   \
+--safe-abort-nonce-too-low-count=3   \
+--resubmission-timeout=30s   \
+--rpc.addr=0.0.0.0   \
+--rpc.port=8548   \
+--rpc.enable-admin   \
+--max-channel-duration=25   \
+--l1-eth-rpc=http://3.108.65.88:8545  \ --private-key=0xde7a7c43cf2901ef41de757659396fb94fb2362192fff3c48bf59d701bffdc59   \
+--batch-type=1   \
+--data-availability-type=calldata   \
+--throttle-threshold=0   \
+--throttle-always-block-size=0   \
+--log.level=info
