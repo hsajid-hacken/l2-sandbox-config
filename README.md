@@ -18,7 +18,7 @@ A comprehensive guide to understanding and deploying an Optimism Layer 2 network
 - [Monitoring & Operations](#monitoring--operations)
 - [Troubleshooting](#troubleshooting)
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 This Optimism Layer 2 setup consists of four main components working together:
 
@@ -60,7 +60,6 @@ This Optimism Layer 2 setup consists of four main components working together:
 |-----------|-------|-------------|
 | **L1 Chain ID** | `20253` | Custom Ethereum devnet identifier |
 | **L2 Chain ID** | `20254` | Optimism Layer 2 network identifier |
-| **Network ID** | `20254` | P2P network identifier (matches L2 chain ID) |
 
 ### Core Network Parameters
 | Parameter | Value | Unit | Description |
@@ -406,59 +405,6 @@ curl http://localhost:8548/health
 curl http://localhost:8560/health
 ```
 
-## 📊 Monitoring & Operations
-
-### Key Metrics to Monitor
-
-| Metric | Component | Expected Value | Alert Threshold |
-|--------|-----------|----------------|-----------------|
-| **Block Height** | op-geth | Increasing ~30/min | Stalled >2 min |
-| **Sync Status** | op-node | `{"sync_status": "synced"}` | Not synced >5 min |
-| **Batch Submissions** | op-batcher | Every 1-5 minutes | No batches >10 min |
-| **Proposals** | op-proposer | Every 10 minutes | No proposals >15 min |
-| **L1 Confirmations** | op-node | 4 confirmations | >10 confirmations |
-
-### Log Analysis
-
-**op-geth Logs:**
-```bash
-# Check for successful block production
-tail -f op-geth-data/logs/geth.log | grep "Imported new chain segment"
-
-# Monitor for sync issues
-tail -f op-geth-data/logs/geth.log | grep -E "(ERROR|WARN)"
-```
-
-**op-node Logs:**
-```bash
-# Check rollup synchronization
-./op-node [flags] 2>&1 | grep "Sync progress"
-
-# Monitor L1 connectivity
-./op-node [flags] 2>&1 | grep -E "(L1|beacon)"
-```
-
-### Performance Benchmarks
-
-| Component | CPU Usage | Memory Usage | Disk I/O | Network |
-|-----------|-----------|--------------|----------|---------|
-| **op-geth** | 2-4 cores | 4-8 GB | High (archive) | Moderate |
-| **op-node** | 1-2 cores | 1-2 GB | Low | High |
-| **op-proposer** | <1 core | <500 MB | Low | Low |
-| **op-batcher** | <1 core | <500 MB | Low | Moderate |
-
-## 🔧 Troubleshooting
-
-### Common Issues & Solutions
-
-| Issue | Symptoms | Root Cause | Solution |
-|-------|----------|------------|----------|
-| **JWT Auth Failure** | `connection refused` on 9551 | Mismatched JWT secrets | Ensure same jwt.txt across components |
-| **Sync Stalled** | op-node not advancing | L1 connectivity issues | Check L1 RPC endpoints |
-| **Batch Failures** | No L1 batch transactions | Insufficient L1 ETH | Fund batcher account |
-| **Proposal Failures** | No output proposals | Insufficient L1 ETH or wrong factory | Fund proposer, verify contract address |
-| **High Memory Usage** | OOM errors | Archive mode + traffic | Increase RAM or use pruning |
-
 ### Debug Commands
 
 ```bash
@@ -478,24 +424,6 @@ curl -X POST http://3.108.65.88:8545 -H "Content-Type: application/json" \
 curl -X POST http://3.108.65.88:8545 -H "Content-Type: application/json" \
   --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x4EaA6339f2df32858680B900c7BdD029Cf87001b","latest"],"id":1}'
 ```
-
-### Performance Optimization
-
-1. **op-geth Optimization:**
-   - Use SSD storage for better I/O
-   - Increase cache size: `--cache=4096`
-   - Consider pruning: `--gcmode=full` instead of `archive`
-
-2. **op-node Optimization:**
-   - Increase L1 RPC timeout: `--l1.rpc-max-batch-size=100`
-   - Tune sequencer lag: `--sequencer.max-safe-lag=1800`
-
-3. **Network Optimization:**
-   - Use dedicated network connections
-   - Monitor bandwidth usage
-   - Consider CDN for RPC endpoints
-
----
 
 ## 🔒 Security Notice
 
